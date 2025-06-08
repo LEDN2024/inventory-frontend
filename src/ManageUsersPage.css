@@ -1,0 +1,116 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f6faff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+.manage-users-container {
+  width: 100%;
+  max-width: 900px;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+}
+
+.back-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #007aff;
+  background-color: white;
+  color: #007aff;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+}
+
+.manage-users-container h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #000;
+}
+
+.users-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.table-header,
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.table-header {
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.table-row {
+  background-color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  font-size: 0.95rem;
+}
+
+.table-row select {
+  padding: 0.4rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.delete-button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #d9534f;
+  background-color: white;
+  color: #d9534f;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.error-msg {
+  color: red;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+  .table-header {
+    display: none;
+  }
+
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+    text-align: left;
+  }
+
+  .table-row > *:not(:last-child) {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.25rem;
+  }
+
+  .table-row::before {
+    content: '';
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+}
