@@ -15,8 +15,10 @@ function LoginPage({ onLogin }) {
     e.preventDefault();
     setError("");
 
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch(`${baseUrl}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -69,11 +71,11 @@ function LoginPage({ onLogin }) {
           <button type="submit">Login</button>
         </form>
 
-<p style={{ marginTop: '0.5rem' }}>
-  <a href="/forgot-password" style={{ color: '#007aff' }}>
-    Forgot Password?
-  </a>
-</p>
+        <p style={{ marginTop: '0.5rem' }}>
+          <a href="/forgot-password" style={{ color: '#007aff' }}>
+            Forgot Password?
+          </a>
+        </p>
 
         {error && <p className="error">{error}</p>}
       </div>
