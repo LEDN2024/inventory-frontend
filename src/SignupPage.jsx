@@ -1,20 +1,14 @@
 import React, { useState } from "react";
 import "./SignupPage.css";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 function SignupPage() {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    manager_code: "",
-  });
+  const [form, setForm] = useState({ email: "", password: "", manager_code: "" });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +16,7 @@ function SignupPage() {
     setMessage("");
 
     try {
-      const res = await fetch(`${baseUrl}/auth/register`, {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -74,6 +68,13 @@ function SignupPage() {
           />
           <button type="submit">Sign Up</button>
         </form>
+
+        <p style={{ marginTop: "0.5rem" }}>
+          Already have an account?{" "}
+          <a href="/login" style={{ color: "#007aff" }}>
+            Log in
+          </a>
+        </p>
 
         {error && <p className="error">{error}</p>}
         {message && <p className="success">{message}</p>}

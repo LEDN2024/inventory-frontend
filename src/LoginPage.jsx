@@ -2,29 +2,25 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignupPage.css";
 
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
+const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
 
 function LoginPage({ onLogin }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    console.log("Sending login credentials:", form);
-    console.log("POSTing to:", baseUrl + "/login");
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
     try {
       const res = await fetch(`${baseUrl}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(form)
       });
 
       const data = await res.json();
@@ -74,9 +70,16 @@ function LoginPage({ onLogin }) {
           <button type="submit">Login</button>
         </form>
 
-        <p style={{ marginTop: "0.5rem" }}>
-          <a href="/forgot-password" style={{ color: "#007aff" }}>
+        <p style={{ marginTop: '0.5rem' }}>
+          <a href="/forgot-password" style={{ color: '#007aff' }}>
             Forgot Password?
+          </a>
+        </p>
+
+        <p style={{ marginTop: '0.5rem' }}>
+          Don’t have an account?{" "}
+          <a href="/signup" style={{ color: "#007aff" }}>
+            Sign up
           </a>
         </p>
 
