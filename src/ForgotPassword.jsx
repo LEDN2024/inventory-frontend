@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -8,7 +9,7 @@ function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3000/auth/forgot-password", {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

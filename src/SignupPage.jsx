@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import "./SignupPage.css";
 
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
 function SignupPage() {
   const [form, setForm] = useState({
     email: "",
@@ -20,7 +23,7 @@ function SignupPage() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:3000/auth/register", {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

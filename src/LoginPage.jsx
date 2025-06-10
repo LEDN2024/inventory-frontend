@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignupPage.css";
 
+const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
+
 function LoginPage({ onLogin }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -14,17 +16,19 @@ function LoginPage({ onLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
-    const baseUrl = import.meta.env.VITE_BACKEND_URL;
+console.log("Sending login credentials:", form);
+console.log("POSTing to:", baseUrl + "/login");
 
-    try {
-      const res = await fetch(`${baseUrl}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+try {
+  const res = await fetch(`${baseUrl}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(form)
+  });
 
-      const data = await res.json();
+  const data = await res.json();
 
       if (res.ok) {
         localStorage.setItem("token", data.token);

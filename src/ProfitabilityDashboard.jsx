@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProfitabilityDashboard.css";
 
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
 function ProfitabilityDashboard() {
   const [storeOptions, setStoreOptions] = useState([]);
   const [storeName, setStoreName] = useState("All");
@@ -14,7 +17,7 @@ function ProfitabilityDashboard() {
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const res = await fetch("http://localhost:3000/stores");
+        const res = await fetch(`${API_BASE}/stores`);
         const data = await res.json();
         setStoreOptions(["All", ...data]);
       } catch (err) {
@@ -40,7 +43,7 @@ function ProfitabilityDashboard() {
         params.append("store_name", storeName);
       }
 
-      const res = await fetch(`http://localhost:3000/profitability?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/profitability?${params.toString()}`);
       if (!res.ok) {
         throw new Error("Failed to fetch COGS");
       }

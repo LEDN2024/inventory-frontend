@@ -12,6 +12,8 @@ import AlertPreferences from './AlertPreferences';
 import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
 
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
+
 function App() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
