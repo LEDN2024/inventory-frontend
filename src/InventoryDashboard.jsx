@@ -131,9 +131,10 @@ const role = localStorage.getItem("role");
       <button onClick={() => window.location.href = "/developer-admin"}>Items & Stores</button>
       <button onClick={() => window.location.href = "/manage-users"}>Accounts</button>
       <button onClick={() => window.location.href = "/profitability"}>Profitability</button>
+    <button onClick={() => window.location.href = "/alert-preferences"}>Alerts</button>
     </>
   )}
-  <button onClick={() => window.location.href = "/alert-preferences"}>Alerts</button>
+  
   <button className="logout" onClick={() => {
     localStorage.clear();
     window.location.href = "/login";
