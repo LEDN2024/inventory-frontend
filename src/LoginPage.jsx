@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignupPage.css";
 
-const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
+const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 function LoginPage({ onLogin }) {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -16,19 +16,18 @@ function LoginPage({ onLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
-console.log("Sending login credentials:", form);
-console.log("POSTing to:", baseUrl + "/login");
+    console.log("Sending login credentials:", form);
+    console.log("POSTing to:", baseUrl + "/login");
 
-try {
-  const res = await fetch(`${baseUrl}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(form)
-  });
+    try {
+      const res = await fetch(`${baseUrl}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-  const data = await res.json();
+      const data = await res.json();
 
       if (res.ok) {
         localStorage.setItem("token", data.token);
@@ -75,8 +74,8 @@ try {
           <button type="submit">Login</button>
         </form>
 
-        <p style={{ marginTop: '0.5rem' }}>
-          <a href="/forgot-password" style={{ color: '#007aff' }}>
+        <p style={{ marginTop: "0.5rem" }}>
+          <a href="/forgot-password" style={{ color: "#007aff" }}>
             Forgot Password?
           </a>
         </p>

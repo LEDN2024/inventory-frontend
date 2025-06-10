@@ -9,7 +9,7 @@ function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/forgot-password`, {
+      const res = await fetch(`${baseUrl}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

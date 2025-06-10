@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ManageUsersPage.css';
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 function ManageUsersPage() {
@@ -19,7 +18,7 @@ function ManageUsersPage() {
       return;
     }
 
-    fetch(`${API_BASE}/users`, {
+    fetch(`${baseUrl}/users`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -31,7 +30,7 @@ function ManageUsersPage() {
 
   const updateRole = async (id, newRole) => {
     try {
-      const res = await fetch(`${API_BASE}/users/${id}/role`, {
+      const res = await fetch(`${baseUrl}/users/${id}/role`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +59,7 @@ function ManageUsersPage() {
     if (!window.confirm(`Are you sure you want to delete ${email}?`)) return;
 
     try {
-      const res = await fetch(`${API_BASE}/users/${id}`, {
+      const res = await fetch(`${baseUrl}/users/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

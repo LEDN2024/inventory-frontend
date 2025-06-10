@@ -8,9 +8,8 @@ import ManageUsersPage from './ManageUsersPage';
 import AdminPage from './AdminPage';
 import ProfitabilityDashboard from './ProfitabilityDashboard';
 import AlertPreferences from './AlertPreferences';
-
-import ForgotPassword from "./ForgotPassword";
-import ResetPassword from "./ResetPassword";
+import ForgotPassword from './ForgotPassword';
+import ResetPassword from './ResetPassword';
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -37,27 +36,40 @@ function App() {
       />
       <Route
         path="/"
-        element={isAuthenticated ? <InventoryDashboard /> : <Navigate to="/login" />}
+        element={
+          isAuthenticated ? <InventoryDashboard /> : <Navigate to="/login" />
+        }
       />
       <Route
         path="/manage-users"
-        element={isAuthenticated && isManager ? <ManageUsersPage /> : <Navigate to="/login" />}
+        element={
+          isAuthenticated && isManager ? <ManageUsersPage /> : <Navigate to="/login" />
+        }
       />
-      <Route path="/alert-preferences" element={<AlertPreferences />} />
       <Route
         path="/developer-admin"
-        element={isAuthenticated && isManager ? <AdminPage /> : <Navigate to="/login" />}
+        element={
+          isAuthenticated && isManager ? <AdminPage /> : <Navigate to="/login" />
+        }
       />
       <Route
         path="/profitability"
-        element={isAuthenticated && isManager ? <ProfitabilityDashboard /> : <Navigate to="/login" />}
+        element={
+          isAuthenticated && isManager ? <ProfitabilityDashboard /> : <Navigate to="/login" />
+        }
       />
+      <Route
+        path="/alert-preferences"
+        element={
+          isAuthenticated && isManager ? <AlertPreferences /> : <Navigate to="/login" />
+        }
+      />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route
         path="*"
         element={<Navigate to={isAuthenticated ? "/" : "/login"} />}
       />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-<Route path="/reset-password" element={<ResetPassword />} />
     </Routes>
   );
 }

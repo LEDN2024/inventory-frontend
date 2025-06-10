@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminPage.css';
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function AdminPage() {
@@ -15,8 +14,8 @@ export default function AdminPage() {
 
   const fetchOptions = async () => {
     const [sRes, iRes] = await Promise.all([
-      fetch(`${API_BASE}/stores`),
-      fetch(`${API_BASE}/items`),
+      fetch(`${baseUrl}/stores`),
+      fetch(`${baseUrl}/items`),
     ]);
     setStores(await sRes.json());
     setItems(await iRes.json());
@@ -27,7 +26,7 @@ export default function AdminPage() {
   }, []);
 
   const addStore = async () => {
-    await fetch(`${API_BASE}/stores`, {
+    await fetch(`${baseUrl}/stores`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newStore })
@@ -37,7 +36,7 @@ export default function AdminPage() {
   };
 
   const addItem = async () => {
-    await fetch(`${API_BASE}/items`, {
+    await fetch(`${baseUrl}/items`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newItem, price: parseFloat(newPrice) || 0 })
@@ -59,7 +58,7 @@ export default function AdminPage() {
             <li key={s} className="list-item">
               <span className="label">{s}</span>
               <button className="delete-btn" onClick={async () => {
-                await fetch(`${API_BASE}/stores/${encodeURIComponent(s)}`, { method: "DELETE" });
+                await fetch(`${baseUrl}/stores/${encodeURIComponent(s)}`, { method: "DELETE" });
                 fetchOptions();
               }}>Delete</button>
             </li>
@@ -83,7 +82,7 @@ export default function AdminPage() {
             <li key={item.name} className="list-item">
               <span className="label">{item.name} — ${parseFloat(item.price).toFixed(2)}</span>
               <button className="delete-btn" onClick={async () => {
-                await fetch(`${API_BASE}/items/${encodeURIComponent(item.name)}`, { method: "DELETE" });
+                await fetch(`${baseUrl}/items/${encodeURIComponent(item.name)}`, { method: "DELETE" });
                 fetchOptions();
               }}>Delete</button>
             </li>

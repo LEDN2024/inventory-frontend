@@ -4,7 +4,6 @@ import autoTable from "jspdf-autotable";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import "./InventoryDashboard.css";
 
-const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 function InventoryDashboard() {
@@ -31,15 +30,15 @@ function InventoryDashboard() {
   const [scannedItem, setScannedItem] = useState(null);
 
   useEffect(() => {
-    fetch(`${API}/stores`).then(res => res.json()).then(setStoreOptions);
-    fetch(`${API}/items`).then(res => res.json()).then(setItemOptions);
+    fetch(`${baseUrl}/stores`).then(res => res.json()).then(setStoreOptions);
+    fetch(`${baseUrl}/items`).then(res => res.json()).then(setItemOptions);
   }, []);
 
   useEffect(() => {
     const scanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }, false);
     scanner.render(
       async (decodedText) => {
-        const res = await fetch(`${API}/inventory/${encodeURIComponent(decodedText)}`);
+        const res = await fetch(`${baseUrl}/inventory/${encodeURIComponent(decodedText)}`);
         if (res.ok) {
           const found = await res.json();
           setForm(prev => ({ ...prev, qr_code_id: found.qr_code_id }));
@@ -57,7 +56,7 @@ function InventoryDashboard() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    await fetch(`${API}/inventory`, {
+    await fetch(`${baseUrl}/inventory`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, qr_id: Math.random().toString(36).substring(2, 10) }),
@@ -70,7 +69,7 @@ function InventoryDashboard() {
     Object.entries(filters).forEach(([k, v]) => {
       if (v && v !== "All") params.append(k, v);
     });
-    const res = await fetch(`${API}/inventory?${params.toString()}`);
+    const res = await fetch(`${baseUrl}/inventory?${params.toString()}`);
     const data = await res.json();
     setItems(data);
   };
@@ -99,7 +98,7 @@ function InventoryDashboard() {
   };
 
   const handleQrSearch = async () => {
-    const res = await fetch(`${API}/inventory/${encodeURIComponent(searchQrCode)}`);
+    const res = await fetch(`${baseUrl}/inventory/${encodeURIComponent(searchQrCode)}`);
     if (res.ok) {
       const found = await res.json();
       setScannedItem(found);
@@ -111,7 +110,7 @@ function InventoryDashboard() {
 
   const updateStatus = async (newStatus) => {
     if (!scannedItem?.qr_code_id) return;
-    await fetch(`${API}/inventory/${scannedItem.qr_code_id}`, {
+    await fetch(`${baseUrl}/inventory/${scannedItem.qr_code_id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),

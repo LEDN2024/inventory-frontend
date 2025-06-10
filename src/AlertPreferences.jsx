@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './AlertPreferences.css';
 
-const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function AlertPreferences() {
@@ -13,9 +12,9 @@ export default function AlertPreferences() {
   const fetchDropdowns = async () => {
     try {
       const [storesRes, itemsRes, alertsRes] = await Promise.all([
-        fetch(`${API}/stores`),
-        fetch(`${API}/items`),
-        fetch(`${API}/alerts`)
+        fetch(`${baseUrl}/stores`),
+        fetch(`${baseUrl}/items`),
+        fetch(`${baseUrl}/alerts`)
       ]);
       setStoreOptions(await storesRes.json());
       setItemOptions(await itemsRes.json());
@@ -34,7 +33,7 @@ export default function AlertPreferences() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API}/alerts`, {
+      const res = await fetch(`${baseUrl}/alerts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, manager_email: "admin@scoops.com" })
@@ -50,7 +49,7 @@ export default function AlertPreferences() {
 
   const deleteAlert = async (id) => {
     try {
-      await fetch(`${API}/alerts/${id}`, { method: 'DELETE' });
+      await fetch(`${baseUrl}/alerts/${id}`, { method: 'DELETE' });
       setAlerts(alerts.filter(a => a.id !== id));
     } catch (err) {
       console.error("Error deleting alert:", err);
