@@ -119,20 +119,26 @@ function InventoryDashboard() {
     fetchItems();
   };
 
+const role = localStorage.getItem("role");
+
   return (
     <div className="inventory-dashboard">
       <header className="dashboard-header">
         <h1>Boston Scoops Inventory</h1>
-        <div className="nav-buttons">
-          <button onClick={() => window.location.href = "/developer-admin"}>Items & Stores</button>
-          <button onClick={() => window.location.href = "/alert-preferences"}>Alerts</button>
-          <button onClick={() => window.location.href = "/manage-users"}>Accounts</button>
-          <button onClick={() => window.location.href = "/profitability"}>Profitability</button>
-          <button className="logout" onClick={() => {
-            localStorage.clear();
-            window.location.href = "/login";
-          }}>Logout</button>
-        </div>
+       <div className="nav-buttons">
+  {role === "manager" && (
+    <>
+      <button onClick={() => window.location.href = "/developer-admin"}>Items & Stores</button>
+      <button onClick={() => window.location.href = "/manage-users"}>Accounts</button>
+      <button onClick={() => window.location.href = "/profitability"}>Profitability</button>
+    </>
+  )}
+  <button onClick={() => window.location.href = "/alert-preferences"}>Alerts</button>
+  <button className="logout" onClick={() => {
+    localStorage.clear();
+    window.location.href = "/login";
+  }}>Logout</button>
+</div>
       </header>
 
       <main className="dashboard-content">
