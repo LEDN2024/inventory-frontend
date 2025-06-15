@@ -64,14 +64,26 @@ function InventoryDashboard() {
   };
 
   const fetchItems = async () => {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([k, v]) => {
-      if (v && v !== "All") params.append(k, v);
-    });
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([k, v]) => {
+    if (v && v !== "All") params.append(k, v);
+  });
+
+  try {
     const res = await fetch(`${baseUrl}/inventory?${params.toString()}`);
     const data = await res.json();
-    setItems(data);
-  };
+
+    if (Array.isArray(data)) {
+      setItems(data);
+    } else {
+      console.error("Expected array but got:", data);
+      setItems([]); // fallback to empty for blank pages
+    }
+  } catch (err) {
+    console.error("Error fetching items:", err);
+    setItems([]);
+  }
+};
 
   const exportCSV = () => {
     const rows = items.map(i => [i.qr_code_id, i.item_type, i.store_name, i.delivery_number, new Date(i.delivery_date).toLocaleDateString(), i.status]);
