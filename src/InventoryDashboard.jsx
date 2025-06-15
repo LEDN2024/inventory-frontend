@@ -71,16 +71,25 @@ function InventoryDashboard() {
 
   try {
     const res = await fetch(`${baseUrl}/inventory?${params.toString()}`);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Inventory fetch failed:", res.status, errorText);
+      setItems([]);
+      return;
+    }
+
     const data = await res.json();
 
-    if (Array.isArray(data)) {
-      setItems(data);
-    } else {
+    if (!Array.isArray(data)) {
       console.error("Expected array but got:", data);
-      setItems([]); // fallback to empty for blank pages
+      setItems([]);
+      return;
     }
+
+    setItems(data);
   } catch (err) {
-    console.error("Error fetching items:", err);
+    console.error("Network error fetching inventory:", err);
     setItems([]);
   }
 };
