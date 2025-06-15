@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { Html5QrcodeScanner } from "html5-qrcode";
 import "./InventoryDashboard.css";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 function InventoryDashboard() {
   const [form, setForm] = useState({
-    qr_code_id: "",
     item_type: "",
     delivery_number: "",
     delivery_date: "",
@@ -25,43 +23,44 @@ function InventoryDashboard() {
   const [items, setItems] = useState([]);
   const [itemOptions, setItemOptions] = useState([]);
   const [storeOptions, setStoreOptions] = useState([]);
-  const [searchQrCode, setSearchQrCode] = useState("");
+  const [searchId, setSearchId] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [scannedItem, setScannedItem] = useState(null);
+  const [newId, setNewId] = useState(null);
 
   useEffect(() => {
     fetch(`${baseUrl}/stores`).then(res => res.json()).then(setStoreOptions);
     fetch(`${baseUrl}/items`).then(res => res.json()).then(setItemOptions);
-  }, []);
-
-  useEffect(() => {
-    const scanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }, false);
-    scanner.render(
-      async (decodedText) => {
-        const res = await fetch(`${baseUrl}/inventory/${encodeURIComponent(decodedText)}`);
-        if (res.ok) {
-          const found = await res.json();
-          setForm(prev => ({ ...prev, qr_code_id: found.qr_code_id }));
-        } else {
-          setForm(prev => ({ ...prev, qr_code_id: decodedText }));
-        }
-        scanner.clear();
-      },
-      () => {}
-    );
+    fetchItems();
   }, []);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
   const handleFilterChange = e => setFilters({ ...filters, [e.target.name]: e.target.value });
 
+  const generateId = () => Math.random().toString(36).substring(2, 10);
+
   const handleSubmit = async e => {
     e.preventDefault();
-    await fetch(`${baseUrl}/inventory`, {
+    const id = generateId();
+    const payload = {
+      ...form,
+      qr_id: id,
+      qr_code_id: id,
+    };
+
+    const res = await fetch(`${baseUrl}/inventory`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, qr_id: Math.random().toString(36).substring(2, 10) }),
+      body: JSON.stringify(payload),
     });
-    fetchItems();
+
+    if (res.ok) {
+      const newItem = await res.json();
+      setNewId(id);
+      setShowModal(true);
+      setForm({ item_type: "", delivery_number: "", delivery_date: "", storage_location: "", store_name: "" });
+      fetchItems();
+    }
   };
 
   const fetchItems = async () => {
@@ -76,7 +75,7 @@ function InventoryDashboard() {
 
   const exportCSV = () => {
     const rows = items.map(i => [i.qr_code_id, i.item_type, i.store_name, i.delivery_number, new Date(i.delivery_date).toLocaleDateString(), i.status]);
-    const csv = ["QR Code,Item,Store,Delivery Number,Delivery Date,Status", ...rows.map(r => r.join(","))].join("\n");
+    const csv = ["ID,Item,Store,Delivery Number,Delivery Date,Status", ...rows.map(r => r.join(","))].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -91,20 +90,20 @@ function InventoryDashboard() {
     doc.text("Inventory Report", 14, 10);
     autoTable(doc, {
       startY: 20,
-      head: [["QR Code", "Item", "Store", "Delivery Number", "Delivery Date", "Status"]],
+      head: [["ID", "Item", "Store", "Delivery Number", "Delivery Date", "Status"]],
       body: items.map(i => [i.qr_code_id, i.item_type, i.store_name, i.delivery_number, new Date(i.delivery_date).toLocaleDateString(), i.status])
     });
     doc.save("inventory.pdf");
   };
 
-  const handleQrSearch = async () => {
-    const res = await fetch(`${baseUrl}/inventory/${encodeURIComponent(searchQrCode)}`);
+  const handleSearch = async () => {
+    const res = await fetch(`${baseUrl}/inventory/${encodeURIComponent(searchId)}`);
     if (res.ok) {
       const found = await res.json();
       setScannedItem(found);
       setShowModal(true);
     } else {
-      alert("QR Code ID not found.");
+      alert("ID not found.");
     }
   };
 
@@ -119,35 +118,30 @@ function InventoryDashboard() {
     fetchItems();
   };
 
-const role = localStorage.getItem("role");
+  const role = localStorage.getItem("role");
 
   return (
     <div className="inventory-dashboard">
       <header className="dashboard-header">
         <h1>Boston Scoops Inventory</h1>
-       <div className="nav-buttons">
-  {role === "manager" && (
-    <>
-      <button onClick={() => window.location.href = "/developer-admin"}>Items & Stores</button>
-      <button onClick={() => window.location.href = "/manage-users"}>Accounts</button>
-      <button onClick={() => window.location.href = "/profitability"}>Profitability</button>
-    <button onClick={() => window.location.href = "/alert-preferences"}>Alerts</button>
-    </>
-  )}
-  
-  <button className="logout" onClick={() => {
-    localStorage.clear();
-    window.location.href = "/login";
-  }}>Logout</button>
-</div>
+        <div className="nav-buttons">
+          {role === "manager" && (
+            <>
+              <button onClick={() => window.location.href = "/developer-admin"}>Items & Stores</button>
+              <button onClick={() => window.location.href = "/manage-users"}>Accounts</button>
+              <button onClick={() => window.location.href = "/profitability"}>Profitability</button>
+              <button onClick={() => window.location.href = "/alert-preferences"}>Alerts</button>
+            </>
+          )}
+          <button className="logout" onClick={() => {
+            localStorage.clear();
+            window.location.href = "/login";
+          }}>Logout</button>
+        </div>
       </header>
 
       <main className="dashboard-content">
-        <h2 className="section-title">Start Scanning</h2>
-        <div id="qr-reader" className="scanner-box"></div>
-
         <form onSubmit={handleSubmit} className="add-inventory">
-          <input name="qr_code_id" placeholder="QR Code" value={form.qr_code_id} onChange={handleChange} required />
           <select name="item_type" value={form.item_type} onChange={handleChange} required>
             <option value="">Item</option>
             {itemOptions.map(i => <option key={i.name} value={i.name}>{i.name}</option>)}
@@ -163,8 +157,8 @@ const role = localStorage.getItem("role");
         </form>
 
         <div className="qr-search">
-          <input placeholder="Search by QR Code" value={searchQrCode} onChange={e => setSearchQrCode(e.target.value)} />
-          <button onClick={handleQrSearch}>Search</button>
+          <input placeholder="Search by ID" value={searchId} onChange={e => setSearchId(e.target.value)} />
+          <button onClick={handleSearch}>Search</button>
         </div>
 
         <section className="inventory-table">
@@ -194,7 +188,7 @@ const role = localStorage.getItem("role");
           <table>
             <thead>
               <tr>
-                <th>QR Code</th>
+                <th>ID</th>
                 <th>Item</th>
                 <th>Store</th>
                 <th>Delivery Number</th>
@@ -218,23 +212,36 @@ const role = localStorage.getItem("role");
         </section>
       </main>
 
-      {showModal && scannedItem && (
+      {showModal && (
         <div className="modal">
           <div className="modal-content">
-            <h3>Item Found</h3>
-            <p><strong>QR Code:</strong> {scannedItem.qr_code_id}</p>
-            <p><strong>Item Type:</strong> {scannedItem.item_type}</p>
-            <p><strong>Status:</strong> {scannedItem.status}</p>
-            <p><strong>Store:</strong> {scannedItem.store_name}</p>
-            <p><strong>Delivery #:</strong> {scannedItem.delivery_number}</p>
-            <p><strong>Date:</strong> {new Date(scannedItem.delivery_date).toLocaleDateString()}</p>
-            <p><strong>Location:</strong> {scannedItem.storage_location}</p>
-            <div className="modal-buttons">
-              <button onClick={() => updateStatus("used")}>Mark Used</button>
-              <button onClick={() => updateStatus("opened")}>Mark Opened</button>
-              <button onClick={() => updateStatus("unopened")}>Mark Unopened</button>
-            </div>
-            <button onClick={() => setShowModal(false)} className="close-btn">Close</button>
+            {scannedItem ? (
+              <>
+                <h3>Item Found</h3>
+                <p><strong>ID:</strong> {scannedItem.qr_code_id}</p>
+                <p><strong>Item Type:</strong> {scannedItem.item_type}</p>
+                <p><strong>Status:</strong> {scannedItem.status}</p>
+                <p><strong>Store:</strong> {scannedItem.store_name}</p>
+                <p><strong>Delivery #:</strong> {scannedItem.delivery_number}</p>
+                <p><strong>Date:</strong> {new Date(scannedItem.delivery_date).toLocaleDateString()}</p>
+                <p><strong>Location:</strong> {scannedItem.storage_location}</p>
+                <div className="modal-buttons">
+                  <button onClick={() => updateStatus("used")}>Mark Used</button>
+                  <button onClick={() => updateStatus("opened")}>Mark Opened</button>
+                  <button onClick={() => updateStatus("unopened")}>Mark Unopened</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3>Item Added!</h3>
+                <p>Your item ID is: <strong>{newId}</strong></p>
+              </>
+            )}
+            <button onClick={() => {
+              setShowModal(false);
+              setScannedItem(null);
+              setNewId(null);
+            }} className="close-btn">Close</button>
           </div>
         </div>
       )}

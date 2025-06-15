@@ -72,14 +72,6 @@ body {
   margin: 1.5rem 0 0.75rem;
 }
 
-#qr-reader {
-  width: 100%;
-  min-height: 160px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-}
-
 .add-inventory {
   display: flex;
   flex-direction: column;
@@ -181,8 +173,8 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   table-layout: fixed;
   word-break: normal;
-word-wrap: break-word;
-white-space: normal;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .inventory-table th,
@@ -257,7 +249,6 @@ white-space: normal;
   margin-bottom: 1.5rem;
 }
 
-/* Desktop overrides */
 @media (min-width: 769px) {
   .inventory-dashboard {
     padding: 2rem 4rem;
